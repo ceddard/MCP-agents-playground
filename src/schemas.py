@@ -1,7 +1,10 @@
 from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage
-from typing import Sequence, Literal, Optional
+from typing import Sequence, Literal, Optional, TypedDict
 from uuid import uuid4
+from datetime import date
+import operator
+from typing_extensions import Annotated
 
 # Modelo migrado de src/__init__.py
 class AppConfig(BaseModel):
@@ -44,3 +47,54 @@ class AgentState(BaseModel):
     user_id: Optional[str] = Field(..., description="Identificador do usuário associado ao estado.")
     messages: Sequence[BaseMessage] = Field(..., description="Sequência de mensagens trocadas pelo agente.")
     next: Literal["Financeiro", "Agendamento"] = Field(..., description="Próximo nó a ser executado.")
+
+class ScheduleBase(BaseModel):
+    user_id: str
+    date: date
+    time: str
+    location: str
+    description: str
+
+class ScheduleCreate(ScheduleBase):
+    pass
+
+class Schedule(ScheduleBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class ScheduleInput(BaseModel):
+    user_id: str
+    date: str
+    time: str
+    location: str
+    description: str
+
+class ListSchedulesInput(BaseModel):
+    user_id: str
+
+class ModifyScheduleInput(BaseModel):
+    schedule_id: int
+    new_date: str
+    new_time: str
+    new_location: str
+    new_description: str
+
+class RemoveScheduleInput(BaseModel):
+    schedule_id: int
+
+class GetBalanceInput(BaseModel):
+    user_id: str
+
+class AddTransactionInput(BaseModel):
+    user_id: str
+    amount: float
+    description: str
+
+# State for the Orchestrator Graph
+class OrchestratorState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], operator.add]
+    next_agent: str
+    sender: str
+    user_id: str

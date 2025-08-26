@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from src.graph import agent_orchestrator
+from typing import cast
+from src.schemas import OrchestratorState
 from langchain_core.messages import HumanMessage
 from src.agents import finance_agent_executor, scheduling_agent_executor
 from dotenv import load_dotenv
 import os
 import uvicorn
 
-# Carrega as variáveis de ambiente do arquivo .env
+# Carrega as variáveis de ambiente do arquivo .env no início do script
 load_dotenv()
 
 # Verifica se a chave da API da OpenAI está configurada
@@ -25,33 +27,36 @@ app = FastAPI(
 
 class QueryRequest(BaseModel):
     query: str
+    user_id: str
 
 class QueryResponse(BaseModel):
     response: str
 
 @app.post("/invoke", response_model=QueryResponse)
 def invoke_agent(request: QueryRequest):
-    """
-    Recebe uma consulta (query) e a envia para o orquestrador de agentes.
-    Retorna a resposta do agente apropriado.
-    """
-    initial_state = {"messages": [HumanMessage(content=request.query)]}
+    """Endpoint principal que envia a consulta para o orquestrador de agentes."""
+    initial_state = {
+        "messages": [HumanMessage(content=request.query)],
+        "next_agent": "",
+        "sender": "usuario",
+        "user_id": request.user_id,
+    }
 
-    # Primeiro tenta usar o orquestrador (os testes mockam `main.agent_orchestrator`)
     try:
-        result = agent_orchestrator.invoke(initial_state)
+        result = agent_orchestrator.invoke(cast(OrchestratorState, initial_state))
         response_content = result["messages"][-1].content
     except Exception:
-        # Fallback por palavra-chave — mantém compatibilidade para execução manual
+        # Fallback simples baseado em palavra-chave
         q = request.query.lower()
-        if "invest" in q or "investimentos" in q:
+        if any(k in q for k in ("invest", "saldo", "conta", "finan")):
             result = finance_agent_executor.invoke({"input": request.query})
         else:
             result = scheduling_agent_executor.invoke({"input": request.query})
+        response_content = (
+            result["messages"][-1].content if "messages" in result else result.get("output", "")
+        )
 
-        response_content = result["messages"][-1].content if "messages" in result else result.get("output", "")
-    
-    return {"response": response_content}
+    return QueryResponse(response=response_content)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
