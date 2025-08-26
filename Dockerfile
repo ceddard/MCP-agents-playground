@@ -1,24 +1,17 @@
-FROM python:3.11-slim
+# Usar uma imagem base oficial do Python
+FROM python:3.13-slim
 
-# set workdir
-WORKDIR /usr/src/app
+# Definir o diretório de trabalho dentro do contêiner
+WORKDIR /app
 
-# Install build deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
- && rm -rf /var/lib/apt/lists/*
+# Copiar os arquivos de requisitos para o contêiner
+COPY requirements.txt .
 
-# Copy only requirements first for caching
-COPY requirements.txt ./
+# Instalar as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app
+# Copiar o restante do código da aplicação para o contêiner
 COPY . .
 
-# Use non-root user
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser && chown -R appuser:appgroup /usr/src/app
-USER appuser
-
-ENV PYTHONUNBUFFERED=1
-CMD ["/usr/local/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Comando padrão para iniciar a aplicação
+CMD ["python", "main.py"]
