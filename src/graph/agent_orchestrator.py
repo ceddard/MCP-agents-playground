@@ -5,6 +5,7 @@ from langchain_core.messages import BaseMessage
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from src.prompts.orchestrator import ORCHESTRATOR_SYSTEM_PROMPT
 from langchain_core.output_parsers import StrOutputParser
 from src.agents import finance_agent_executor, scheduling_agent_executor
 from src.schemas import OrchestratorConfig
@@ -17,12 +18,7 @@ class AgentState(TypedDict):
 def create_agent_orchestrator():
     llm = ChatOpenAI(temperature=0)
 
-    prompt = ChatPromptTemplate.from_template(
-        """Você é um orquestrador de agentes. Sua função é encaminhar a pergunta do usuário para o agente correto.
-        Responda apenas com 'Financeiro' ou 'Agendamento'.
-
-        Pergunta do usuário: {input}"""
-    )
+    prompt = ChatPromptTemplate.from_template(ORCHESTRATOR_SYSTEM_PROMPT + "\n\nPergunta do usuário: {input}")
 
     router_chain = prompt | llm | StrOutputParser()
 
