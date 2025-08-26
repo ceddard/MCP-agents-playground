@@ -5,8 +5,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.tools.finance_tools import get_balance, make_investment, transfer_money
-from src.tools.scheduling_tools import schedule_appointment, reschedule_appointment, cancel_appointment
+from src.agents.finance.tools.balance import get_balance
+from src.agents.finance.tools.investment import make_investment
+from src.agents.finance.tools.transfer import transfer_money
+from src.agents.finance.tools.trend import classify_usd_brl_trend_from_series
+from src.agents.scheduling.tools.schedule import schedule_appointment
+from src.agents.scheduling.tools.reschedule import reschedule_appointment
+from src.agents.scheduling.tools.cancel import cancel_appointment
 
 # Testes para as ferramentas financeiras
 def test_get_balance():
@@ -27,3 +32,18 @@ def test_reschedule_appointment():
 
 def test_cancel_appointment():
     assert cancel_appointment("") == "Compromisso cancelado com sucesso!"
+
+
+# --------- Testes de classificação de tendência USD/BRL (heurístico) ---------
+
+@pytest.mark.parametrize(
+    "series,expected",
+    [
+        ([5.00, 5.01, 5.02, 5.03, 5.05], "alta provável"),
+        ([5.10, 5.08, 5.06, 5.05, 5.04], "queda provável"),
+        ([5.00, 5.001, 5.0005, 5.001], "estável/incerta"),
+        ([5.00, 5.10], "dados insuficientes"),
+    ],
+)
+def test_classify_usd_brl_trend_from_series(series, expected):
+    assert classify_usd_brl_trend_from_series(series) == expected

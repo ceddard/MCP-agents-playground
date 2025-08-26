@@ -1,0 +1,38 @@
+from pydantic import BaseModel
+from typing import Optional, Literal
+
+# Modelo migrado de src/__init__.py
+class AppConfig(BaseModel):
+    """Aplicação: configurações mínimas compartilhadas."""
+    app_name: str = "MCP-agents-playground"
+    debug: bool = False
+    default_locale: Optional[str] = "pt-BR"
+
+# Modelo migrado de src/graph/agent_orchestrator.py
+class OrchestratorConfig(BaseModel):
+    """Configuração mínima para o orquestrador."""
+    default_next: Literal["Financeiro", "Agendamento"] = "Financeiro"
+
+# Modelo migrado de src/tools/finance_tools.py
+class FinanceToolMeta(BaseModel):
+    """Metadados simples para ferramentas financeiras."""
+    name: str
+    description: str
+
+# Modelo migrado de src/tools/scheduling_tools.py
+class SchedulingToolMeta(BaseModel):
+    """Metadados simples para ferramentas de agendamento."""
+    name: str
+    timezone: str = "UTC"
+
+# Modelo migrado de src/utils/design_partner.py
+class PartnerInfo(BaseModel):
+    """Informações mínimas sobre um parceiro de design."""
+    partner_name: str
+    contact_email: str | None = None
+
+# Modelo migrado de src/agents/__init__.py
+class AgentMeta(BaseModel):
+    """Informações mínimas sobre um agente."""
+    name: str
+    version: str = "0.0.1"

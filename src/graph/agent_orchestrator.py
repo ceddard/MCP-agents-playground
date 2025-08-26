@@ -1,4 +1,5 @@
 from typing import TypedDict, Annotated, Sequence, Literal
+from pydantic import BaseModel
 import operator
 from langchain_core.messages import BaseMessage
 from langgraph.graph import StateGraph, END
@@ -6,10 +7,12 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from src.agents import finance_agent_executor, scheduling_agent_executor
+from src.schemas import OrchestratorConfig
 
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
     next: Literal["Financeiro", "Agendamento"]
+
 
 def create_agent_orchestrator():
     llm = ChatOpenAI(temperature=0)

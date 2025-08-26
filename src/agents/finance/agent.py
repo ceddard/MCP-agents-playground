@@ -1,31 +1,18 @@
 from langchain_openai import ChatOpenAI
-from langchain.agents import AgentExecutor
+from langchain.agents import AgentExecutor, Tool
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.agents.format_scratchpad import format_to_openai_function_messages
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from src.tools.finance_tools import finance_tools, fetch_financial_data
-from langchain.agents import Tool
+from .tools import finance_tools
 
-# Normalize tool names to match OpenAI functions pattern
+
 def _normalize_tool(t: Tool) -> Tool:
-    # create a shallow copy with a safe name
     safe_name = t.name.replace(" ", "_").replace("-", "_")
     safe_name = ''.join(c for c in safe_name if c.isalnum() or c in ['_', '-'])
     return Tool(name=safe_name, func=t.func, description=t.description)
 
 normalized_finance_tools = [_normalize_tool(t) for t in finance_tools]
-
-# Adicionando fetch_financial_data ao conjunto de ferramentas disponíveis
-normalized_finance_tools.append(
-    _normalize_tool(
-        Tool(
-            name="fetch_financial_data",
-            func=fetch_financial_data,
-            description="Use esta ferramenta para consultar dados financeiros ou notícias sobre o dólar."
-        )
-    )
-)
 
 llm = ChatOpenAI(temperature=0)
 

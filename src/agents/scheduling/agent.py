@@ -1,13 +1,12 @@
 from langchain_openai import ChatOpenAI
-from langchain.agents import AgentExecutor
+from langchain.agents import AgentExecutor, Tool
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.agents.format_scratchpad import format_to_openai_function_messages
 from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from src.tools.scheduling_tools import scheduling_tools
-from langchain.agents import Tool
+from .tools import scheduling_tools
 
-# Normalize tool names to match OpenAI functions pattern
+
 def _normalize_tool(t: Tool) -> Tool:
     safe_name = t.name.replace(" ", "_").replace("-", "_")
     safe_name = ''.join(c for c in safe_name if c.isalnum() or c in ['_', '-'])

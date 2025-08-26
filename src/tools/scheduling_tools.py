@@ -1,4 +1,5 @@
 from langchain.agents import Tool
+from src.schemas import SchedulingToolMeta
 
 def schedule_appointment(query: str) -> str:
     """Fake function to schedule an appointment."""
