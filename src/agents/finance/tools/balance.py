@@ -8,7 +8,6 @@ def get_balance(query: str) -> str:
     """
     try:
         db = SessionLocal()
-        # Supondo um user_id fixo por enquanto
         finances = get_finances(db, user_id="user1")
         db.close()
 

@@ -5,7 +5,6 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-# Modelo para Agendamentos
 class Schedule(Base):
     __tablename__ = 'schedules'
 
@@ -16,7 +15,6 @@ class Schedule(Base):
     location = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
-# Modelo para Finanças
 class Finance(Base):
     __tablename__ = 'finances'
 
@@ -27,10 +25,8 @@ class Finance(Base):
     date = Column(DateTime, nullable=False)
     time = Column(String, nullable=False)
 
-# Configuração do banco de dados
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/your_database")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Criar tabelas
 Base.metadata.create_all(bind=engine)

@@ -21,7 +21,6 @@ def transfer_money(query: str) -> str:
         details = structured_llm.invoke(f"Extraia os detalhes da seguinte solicitação de transferência: '{query}'")
 
         db = SessionLocal()
-        # Supondo um user_id fixo por enquanto
         create_finance(db, user_id="user1", amount=-details.amount, description=f"Transferência para {details.recipient}", date=datetime.now(), time=datetime.now().strftime('%H:%M'))
         db.close()
         

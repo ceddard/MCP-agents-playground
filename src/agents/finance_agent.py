@@ -2,7 +2,6 @@ from src.tools.finance_tools import finance_tools, fetch_financial_data
 from langchain.agents import Tool
 from .agent_factory import build_agent_executor
 
-# Adicionando fetch_financial_data ao conjunto de ferramentas disponíveis
 all_finance_tools = finance_tools + [
     Tool(
         name="fetch_financial_data",

@@ -21,7 +21,6 @@ def make_investment(query: str) -> str:
         details = structured_llm.invoke(f"Extraia os detalhes do seguinte pedido de investimento: '{query}'")
 
         db = SessionLocal()
-        # Supondo um user_id fixo por enquanto
         create_finance(db, user_id="user1", amount=-details.amount, description=details.description, date=datetime.now(), time=datetime.now().strftime('%H:%M'))
         db.close()
         

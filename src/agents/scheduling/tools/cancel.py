@@ -17,7 +17,6 @@ def cancel_appointment(query: str) -> str:
         llm = ChatOpenAI(temperature=0, model="gpt-4o")
         structured_llm = llm.with_structured_output(CancelDetails)
         
-        # Supondo um user_id fixo por enquanto
         schedules = get_schedules(db, user_id="user1")
 
         if not schedules:

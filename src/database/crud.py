@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from src.database.models import Schedule, Finance
 from datetime import datetime
 
-# CRUD para Agendamentos
 def create_schedule(db: Session, user_id: str, date: datetime, time: str, location: str, description: str):
     schedule = Schedule(user_id=user_id, date=date, time=time, location=location, description=description)
     db.add(schedule)
@@ -32,7 +31,6 @@ def delete_schedule(db: Session, schedule_id: int):
     return schedule
 
 
-# CRUD para Finanças
 def create_finance(db: Session, user_id: str, amount: float, description: str, date: datetime, time: str):
     finance = Finance(user_id=user_id, amount=amount, description=description, date=date, time=time)
     db.add(finance)

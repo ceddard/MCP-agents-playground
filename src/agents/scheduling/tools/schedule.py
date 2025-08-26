@@ -6,7 +6,6 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 
-# Modelo Pydantic para extração de informações
 class ScheduleDetails(BaseModel):
     """Informações extraídas para agendar um compromisso."""
     date: str = Field(description="A data do compromisso, formato DD/MM/YYYY")
@@ -19,17 +18,14 @@ def schedule_appointment(query: str) -> str:
     Analisa a consulta usando um LLM para extrair detalhes do agendamento e o salva no banco de dados.
     """
     try:
-        # Configura o LLM para extrair dados estruturados
         llm = ChatOpenAI(temperature=0, model="gpt-4o")
         structured_llm = llm.with_structured_output(ScheduleDetails)
 
-        # Invoca o LLM para extrair os detalhes da consulta
         details = structured_llm.invoke(f"Extraia os detalhes do seguinte pedido de agendamento: '{query}'")
 
         date = datetime.strptime(details.date, '%d/%m/%Y')
 
         db = SessionLocal()
-        # Supondo um user_id fixo por enquanto
         create_schedule(db, user_id="user1", date=date, time=details.time, location=details.location, description=details.description)
         db.close()
         

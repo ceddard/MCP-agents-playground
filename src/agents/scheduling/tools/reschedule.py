@@ -21,9 +21,7 @@ def reschedule_appointment(query: str) -> str:
         llm = ChatOpenAI(temperature=0, model="gpt-4o")
         structured_llm = llm.with_structured_output(RescheduleDetails)
         
-        # Para reagendar, primeiro precisamos saber quais são os compromissos existentes
         db = SessionLocal()
-        # Supondo um user_id fixo por enquanto
         schedules = get_schedules(db, user_id="user1")
         db.close()
 
