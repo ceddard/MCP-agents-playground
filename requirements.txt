@@ -7,3 +7,4 @@ uvicorn[standard]
 pytest
 httpx
 pydantic
+psycopg2-binary

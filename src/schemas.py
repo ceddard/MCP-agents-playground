@@ -1,5 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional, Literal
+from pydantic import BaseModel, Field
+from langchain_core.messages import BaseMessage
+from typing import Sequence, Literal, Optional
+from uuid import uuid4
 
 # Modelo migrado de src/__init__.py
 class AppConfig(BaseModel):
@@ -36,3 +38,9 @@ class AgentMeta(BaseModel):
     """Informações mínimas sobre um agente."""
     name: str
     version: str = "0.0.1"
+
+class AgentState(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), description="Identificador único para cada chamada.")
+    user_id: Optional[str] = Field(..., description="Identificador do usuário associado ao estado.")
+    messages: Sequence[BaseMessage] = Field(..., description="Sequência de mensagens trocadas pelo agente.")
+    next: Literal["Financeiro", "Agendamento"] = Field(..., description="Próximo nó a ser executado.")
